@@ -1,0 +1,7 @@
+{
+  "name": "ZenSpend - Mindful Finance Tracker",
+  "description": "A beautiful, minimalist daily expense and income tracker with smart budgeting, category management, and AI-powered financial insights.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
