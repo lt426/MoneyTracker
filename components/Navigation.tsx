@@ -31,7 +31,6 @@ const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab }) => {
               }`}
             >
               <div className={`p-2 sm:p-2.5 rounded-xl sm:rounded-2xl transition-all duration-300 ${isActive ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100 scale-105' : 'bg-transparent group-hover:bg-slate-50'}`}>
-                {/* Fixed: Use className for responsive sizing instead of invalid sm:size prop */}
                 <Icon className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={isActive ? 2.5 : 2} />
               </div>
               <span className={`text-[9px] sm:text-[10px] font-black uppercase tracking-tight transition-all ${isActive ? 'opacity-100' : 'opacity-60'}`}>{tab.label}</span>
