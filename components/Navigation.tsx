@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { LayoutDashboard, History, PiggyBank, Tags, BarChart3 } from 'lucide-react';
+import { LayoutDashboard, History, PiggyBank, Tags, BarChart3, ScanLine } from 'lucide-react';
 
 interface NavigationProps {
   activeTab: string;
@@ -11,6 +11,7 @@ const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab }) => {
   const tabs = [
     { id: 'dashboard', label: 'Home', icon: LayoutDashboard },
     { id: 'transactions', label: 'Activity', icon: History },
+    { id: 'ocr', label: 'Scan', icon: ScanLine },
     { id: 'budgets', label: 'Budget', icon: PiggyBank },
     { id: 'annual', label: 'Yearly', icon: BarChart3 },
     { id: 'categories', label: 'Labels', icon: Tags },
@@ -18,7 +19,7 @@ const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab }) => {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl border-t border-slate-100 px-6 pt-3 pb-6 md:pb-3 z-50 md:top-0 md:bottom-auto md:h-screen md:w-24 md:flex-col md:border-t-0 md:border-r md:px-0 flex md:block safe-bottom shadow-[0_-8px_30px_rgb(0,0,0,0.04)]">
-      <div className="flex justify-between items-center w-full md:flex-col md:gap-10 md:mt-12 px-1 md:px-0">
+      <div className="flex justify-between items-center w-full md:flex-col md:gap-8 md:mt-12 px-1 md:px-0">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;

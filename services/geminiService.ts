@@ -1,5 +1,5 @@
 
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 import { Transaction, Category, Budget } from '../types';
 
 export async function getFinancialInsights(
@@ -23,7 +23,6 @@ export async function getFinancialInsights(
     limit: b.amount
   }));
 
-  // Create a new GoogleGenAI instance right before making an API call to ensure it always uses the most up-to-date API key.
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   try {
@@ -42,5 +41,64 @@ export async function getFinancialInsights(
   } catch (error) {
     console.error("Gemini Insights Error:", error);
     return "Insights are currently unavailable, but your progress looks great!";
+  }
+}
+
+export async function processReceipt(
+  base64Image: string,
+  mimeType: string,
+  availableCategories: Category[]
+) {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  
+  const categoryNames = availableCategories.map(c => `${c.id}:${c.name}`).join(', ');
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: [
+        {
+          inlineData: {
+            data: base64Image,
+            mimeType: mimeType
+          }
+        },
+        {
+          text: `Analyze this receipt. 
+          1. Detect the purchase date.
+          2. List all significant items or groups of items. 
+          3. For each item/group, suggest the best matching category ID from this list: [${categoryNames}].
+          Return a JSON object with a 'date' field and an 'items' array. Each item should have 'amount', 'note', and 'categoryId'.`
+        }
+      ],
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            date: { type: Type.STRING, description: "The date of purchase in YYYY-MM-DD format." },
+            items: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  amount: { type: Type.NUMBER, description: "The item price or subtotal." },
+                  note: { type: Type.STRING, description: "The item name or category description." },
+                  categoryId: { type: Type.STRING, description: "The ID of the best matching category." }
+                },
+                required: ["amount", "note", "categoryId"]
+              }
+            }
+          },
+          required: ["date", "items"]
+        },
+        systemInstruction: "You are a receipt scanning expert. If a receipt has multiple different types of items (e.g., groceries and electronics), break them down. If it's a simple receipt, return the total as a single item. Be precise with numbers. If the date is missing, use today's date."
+      }
+    });
+
+    return JSON.parse(response.text || "{}");
+  } catch (error) {
+    console.error("Gemini OCR Error:", error);
+    throw new Error("Failed to scan receipt. Please try again or enter manually.");
   }
 }
